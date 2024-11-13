@@ -28,9 +28,12 @@ public class InventorySystem : MonoBehaviour
 
         public void OpenInventory()
         {
+            int itemCount = 0;
+
             foreach (InventoryItem item in items)
             {
-                Debug.Log(item.itemName);
+                itemCount++;
+                Debug.Log("Item " + item.itemName + ": " + itemCount);
             }
         }
     }

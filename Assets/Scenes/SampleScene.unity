@@ -454,10 +454,21 @@ MonoBehaviour:
   - {fileID: 4038245375929620776, guid: 8d3c4e5be95efff4bafe8de382fb0404, type: 3}
   - {fileID: 4038245375929620776, guid: 8d3c4e5be95efff4bafe8de382fb0404, type: 3}
   enemyPrefabs:
-  - {fileID: 8327263150229081816, guid: d5ed2665d82d73e4c893fb3dfa304db9, type: 3}
+  - {fileID: 3597443829721894019, guid: e7133b1d00180f44ab0a9c0307a1e2b4, type: 3}
+  corridorTrapPrefabs:
+  - {fileID: 1620279243, guid: 187f1a7cf50462347abb8f43c50b6482, type: 3}
+  trapRoomTrapPrefabs:
+  - {fileID: 1353646887, guid: 4fa6eedebdb2f904d91ed6f3c4f510a3, type: 3}
   propPlacementChance: 0.1
-  enemyPlacementChance: 0.01
+  enemyPlacementChance: 0.05
+  trapPlacementChance: 0.2
   isRoom: 1
+  maxNavMeshDistance: 2
+  isTrapRoom: 0
+  isTreasureRoom: 0
+  isLairRoom: 0
+  isTeleportRoom: 0
+  isBossRoom: 0
 --- !u!4 &938890722
 Transform:
   m_ObjectHideFlags: 0
@@ -611,6 +622,69 @@ Transform:
   - {fileID: 1859367101}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1195505102
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1195505103}
+  - component: {fileID: 1195505104}
+  m_Layer: 0
+  m_Name: NavMeshSurfaceManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1195505103
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1195505102}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.09488778, y: 0.7275087, z: 1.7726017}
+  m_LocalScale: {x: 100, y: 100, z: 100}
+  m_ConstrainProportionsScale: 1
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1195505104
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1195505102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_AgentTypeID: 0
+  m_CollectObjects: 0
+  m_Size: {x: 10, y: 10, z: 10}
+  m_Center: {x: 0, y: 2, z: 0}
+  m_LayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_UseGeometry: 0
+  m_DefaultArea: 0
+  m_GenerateLinks: 0
+  m_IgnoreNavMeshAgent: 1
+  m_IgnoreNavMeshObstacle: 1
+  m_OverrideTileSize: 0
+  m_TileSize: 256
+  m_OverrideVoxelSize: 0
+  m_VoxelSize: 0.033333335
+  m_MinRegionArea: 0.001
+  m_NavMeshData: {fileID: 23800000, guid: 48a2caeefad6f5b45bbeac001caa3126, type: 2}
+  m_BuildHeightMesh: 0
 --- !u!1001 &1859367100
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -727,6 +801,11 @@ MonoBehaviour:
   tilePrefab: {fileID: 938890720}
   playerPrefab: {fileID: 7384544040926495519, guid: 6c2cdfe21ab74044da4c00d36fe4dec8, type: 3}
   goalPrefab: {fileID: 2539671375780893672, guid: c88d4408ff672f145b9eb5ff9f99aed6, type: 3}
+  navMeshSurface: {fileID: 1195505104}
+  standardRoomWeight: 0.5
+  treasureRoomWeight: 0.2
+  lairRoomWeight: 0.2
+  trapRoomWeight: 0.5
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -737,3 +816,4 @@ SceneRoots:
   - {fileID: 975824433}
   - {fileID: 1946453568}
   - {fileID: 938890722}
+  - {fileID: 1195505103}

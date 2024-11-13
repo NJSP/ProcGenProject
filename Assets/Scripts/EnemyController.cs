@@ -1,85 +1,116 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
-public class EnemyController : MonoBehaviour
+public class EnemyAI : MonoBehaviour
 {
-    public float wanderSpeed = 2f;
-    public float chaseSpeed = 4f;
-    public float detectionRange = 5f;
-    public float attackRange = 1f;
+    public Transform player;
+    public float detectionRadius = 10f;
+    public float attackRange = 2f;
     public int attackDamage = 10;
-    public float wanderRadius = 5f;
-    public float wanderInterval = 3f;
-    private Transform player;
-    private bool isChasing;
-    private Vector3 wanderTarget;
-    private float wanderTimer;
+    public float attackCooldown = 1.5f;
+    public float moveSpeed = 3.5f;
+    public float turnSpeed = 720f; // Add turnSpeed variable
+    public float stoppingDistance = 1.5f; // Add stopping distance to prevent twitching
 
-    // Start is called before the first frame update
+    private Animator animator;
+    private NavMeshAgent agent;
+    private EnemyState currentState = EnemyState.Idle;
+    private float lastAttackTime;
+
+    // Animation state names
+    private const string IdleState = "Idle";
+    private const string ChaseState = "Chase";
+    private const string AttackState = "Attack";
+
     void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player").transform;
-        isChasing = false;
-        wanderTimer = wanderInterval;
-        SetNewWanderTarget();
+        animator = GetComponent<Animator>();
+        agent = GetComponent<NavMeshAgent>();
+        agent.angularSpeed = turnSpeed; // Set the angular speed of the NavMeshAgent
+        agent.stoppingDistance = stoppingDistance; // Set the stopping distance
+
+        GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
+        if (playerObject != null)
+        {
+            player = playerObject.transform;
+        }
+        currentState = EnemyState.Idle;
     }
 
-    // Update is called once per frame
     void Update()
     {
-        if (Vector3.Distance(transform.position, player.position) <= detectionRange)
-        {
-            isChasing = true;
-        }
-        else if (Vector3.Distance(transform.position, player.position) > detectionRange)
-        {
-            isChasing = false;
-        }
+        animator.SetFloat("Speed", agent.velocity.magnitude);
 
-        if (isChasing)
+        switch (currentState)
         {
-            ChasePlayer();
-        }
-        else
-        {
-            Wander();
+            case EnemyState.Idle:
+                Idle();
+                break;
+            case EnemyState.Chase:
+                Chase();
+                break;
+            case EnemyState.Combat:
+                Combat();
+                break;
         }
     }
 
-    void Wander()
+    private void Idle()
     {
-        wanderTimer += Time.deltaTime;
-        if (wanderTimer >= wanderInterval)
+        if (!animator.GetCurrentAnimatorStateInfo(0).IsName(IdleState))
         {
-            SetNewWanderTarget();
-            wanderTimer = 0;
+            animator.CrossFade(IdleState, 0.001f);
         }
 
-        transform.position = Vector3.MoveTowards(transform.position, wanderTarget, wanderSpeed * Time.deltaTime);
-    }
-
-    void SetNewWanderTarget()
-    {
-        Vector3 randomDirection = Random.insideUnitSphere * wanderRadius;
-        randomDirection += transform.position;
-        randomDirection.y = transform.position.y; // Keep the same height
-        wanderTarget = randomDirection;
-    }
-
-    void ChasePlayer()
-    {
-        transform.position = Vector3.MoveTowards(transform.position, player.position, chaseSpeed * Time.deltaTime);
-
-        if (Vector3.Distance(transform.position, player.position) <= attackRange)
+        if (Vector3.Distance(transform.position, player.position) < detectionRadius)
         {
-            AttackPlayer();
+            currentState = EnemyState.Chase;
+            agent.isStopped = false;
         }
     }
 
-    void AttackPlayer()
+    private void Chase()
     {
-        // Implement attack logic here, e.g., reduce player's health
-        Debug.Log("Attacking player with " + attackDamage + " damage.");
+        if (!animator.GetCurrentAnimatorStateInfo(0).IsName(ChaseState))
+        {
+            animator.CrossFade(ChaseState, 0.001f);
+        }
+
+        if (player != null)
+        {
+            agent.SetDestination(player.position);
+            float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+
+            if (distanceToPlayer <= attackRange)
+            {
+                currentState = EnemyState.Combat;
+                agent.isStopped = true;
+            }
+            else if (distanceToPlayer > detectionRadius * 1.5f)
+            {
+                currentState = EnemyState.Idle;
+                agent.isStopped = true;
+            }
+        }
+    }
+
+    private void Combat()
+    {
+        if (!animator.GetCurrentAnimatorStateInfo(0).IsName(AttackState))
+        {
+            animator.CrossFade(AttackState, 0.001f);
+        }
+
+        if (Time.time >= lastAttackTime + attackCooldown)
+        {
+            animator.SetTrigger("Attack");
+            lastAttackTime = Time.time;
+        }
+
+        if (Vector3.Distance(transform.position, player.position) > attackRange)
+        {
+            currentState = EnemyState.Chase;
+            agent.isStopped = false;
+        }
     }
 }

@@ -169,7 +169,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   walkSpeed: 1.5
-  sprintSpeed: 3
+  baseSprintSpeed: 3
+  maxSprintSpeed: 10
+  acceleration: 0.5
+  deceleration: 0.5
   crouchSpeed: 0.5
   gravity: -9.81
   jumpHeight: 1

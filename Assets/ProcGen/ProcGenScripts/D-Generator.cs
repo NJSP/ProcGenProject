@@ -1,5 +1,6 @@
 using Assets.ProcGen.ProcGenScripts;
 using System.Collections.Generic;
+using Unity.AI.Navigation;
 using UnityEngine;
 
 public class DungeonGenerator : MonoBehaviour
@@ -14,6 +15,13 @@ public class DungeonGenerator : MonoBehaviour
     public GameObject tilePrefab;
     public GameObject playerPrefab; // Reference to the player prefab
     public GameObject goalPrefab; // Reference to the goal item prefab
+    public NavMeshSurface navMeshSurface;
+    //public enum RoomType { Standard, Treasure, Lair, Trap }
+
+    public float standardRoomWeight = 0.5f;
+    public float treasureRoomWeight = 0.2f;
+    public float lairRoomWeight = 0.2f;
+    public float trapRoomWeight = 0.1f;
 
     private BSPNode root;
     private PG_Tile[,] tiles;
@@ -21,20 +29,34 @@ public class DungeonGenerator : MonoBehaviour
 
     void Start()
     {
+        Debug.Log("Starting dungeon generation...");
         GenerateDungeon();
-        PlaceExitDoor(); // Ensure the exit door tile is declared before placing walls
+        AssignRoomTypes();
+        ModifyTilesBasedOnRoomType();
+        PlaceExitDoor();
         PlaceWalls();
         PlacePlayer();
         PlaceGoalItem();
+
+        // Ensure the NavMeshSurface covers the entire dungeon
+        AdjustNavMeshSurface();
+
+        if (navMeshSurface != null)
+        {
+            navMeshSurface.BuildNavMesh();
+        }
+        Debug.Log("Dungeon generation completed.");
     }
 
     void GenerateDungeon()
     {
+        Debug.Log("Generating dungeon...");
         root = new BSPNode(new RectInt(0, 0, width, height));
         tiles = new PG_Tile[width, height];
         Split(root, maxSplits);
         CreateRooms(root);
         ConnectRooms(root);
+        Debug.Log("Dungeon generated.");
     }
 
     void Split(BSPNode node, int splits)
@@ -65,6 +87,8 @@ public class DungeonGenerator : MonoBehaviour
             node.Right = new BSPNode(new RectInt(node.Rect.x + split, node.Rect.y, node.Rect.width - split, node.Rect.height));
         }
 
+        Debug.Log($"Split node at {node.Rect} into {node.Left.Rect} and {node.Right.Rect}");
+
         Split(node.Left, splits - 1);
         Split(node.Right, splits - 1);
     }
@@ -79,7 +103,8 @@ public class DungeonGenerator : MonoBehaviour
             int roomY = Random.Range(0, node.Rect.height - roomHeight);
             node.Room = new RectInt(node.Rect.x + roomX, node.Rect.y + roomY, roomWidth, roomHeight);
 
-            // Instantiate tiles for the room
+            Debug.Log($"Created room at {node.Room}");
+
             for (int x = node.Room.x; x < node.Room.x + node.Room.width; x++)
             {
                 for (int y = node.Room.y; y < node.Room.y + node.Room.height; y++)
@@ -91,10 +116,73 @@ public class DungeonGenerator : MonoBehaviour
         }
         else
         {
-            if (node.Left != null)
-                CreateRooms(node.Left);
-            if (node.Right != null)
-                CreateRooms(node.Right);
+            if (node.Left != null) CreateRooms(node.Left);
+            if (node.Right != null) CreateRooms(node.Right);
+        }
+    }
+
+    void AssignRoomTypes()
+    {
+        var allRooms = GetAllRooms(root);
+        Debug.Log($"Total rooms found: {allRooms.Count}");
+        foreach (var room in allRooms)
+        {
+            room.RoomType = GetRandomRoomType();
+            Debug.Log($"Assigned {room.RoomType} to room at {room.Room}");
+        }
+    }
+
+    RoomType GetRandomRoomType()
+    {
+        float totalWeight = standardRoomWeight + treasureRoomWeight + lairRoomWeight + trapRoomWeight;
+        float randomValue = Random.value * totalWeight;
+
+        if (randomValue < standardRoomWeight)
+            return RoomType.Standard;
+        else if (randomValue < standardRoomWeight + treasureRoomWeight)
+            return RoomType.Treasure;
+        else if (randomValue < standardRoomWeight + treasureRoomWeight + lairRoomWeight)
+            return RoomType.Lair;
+        else
+            return RoomType.Trap;
+    }
+
+    void ModifyTilesBasedOnRoomType()
+    {
+        List<BSPNode> allRooms = GetAllRooms(root);
+        foreach (var room in allRooms)
+        {
+            for (int x = room.Room.x; x < room.Room.x + room.Room.width; x++)
+            {
+                for (int y = room.Room.y; y < room.Room.y + room.Room.height; y++)
+                {
+                    if (tiles[x, y] != null)
+                    {
+                        switch (room.RoomType)
+                        {
+                            case RoomType.Treasure:
+                                tiles[x, y].isRoom = true;
+                                tiles[x, y].isTrapRoom = false;
+                                // Add more treasure-related modifications here
+                                break;
+                            case RoomType.Lair:
+                                tiles[x, y].isRoom = true;
+                                tiles[x, y].isTrapRoom = false;
+                                // Add more lair-related modifications here
+                                break;
+                            case RoomType.Trap:
+                                tiles[x, y].isRoom = true;
+                                tiles[x, y].isTrapRoom = true;
+                                // Add more trap-related modifications here
+                                break;
+                            default:
+                                tiles[x, y].isRoom = true;
+                                tiles[x, y].isTrapRoom = false;
+                                break;
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -110,6 +198,8 @@ public class DungeonGenerator : MonoBehaviour
 
             Vector2Int leftCenter = new Vector2Int(leftRoom.x + leftRoom.width / 2, leftRoom.y + leftRoom.height / 2);
             Vector2Int rightCenter = new Vector2Int(rightRoom.x + rightRoom.width / 2, rightRoom.y + rightRoom.height / 2);
+
+            Debug.Log($"Connecting rooms at {leftCenter} and {rightCenter}");
 
             CreateCorridor(leftCenter, rightCenter);
         }
@@ -184,6 +274,7 @@ public class DungeonGenerator : MonoBehaviour
             RectInt firstRoom = GetRoom(root);
             Vector3 playerPosition = new Vector3(firstRoom.x + firstRoom.width / 2, 1, firstRoom.y + firstRoom.height / 2);
             playerInstance = Instantiate(playerPrefab, playerPosition, Quaternion.identity);
+            Debug.Log($"Player placed at {playerPosition}");
         }
     }
 
@@ -191,10 +282,11 @@ public class DungeonGenerator : MonoBehaviour
     {
         if (goalPrefab != null)
         {
-            List<RectInt> rooms = GetAllRooms(root);
-            RectInt randomRoom = rooms[Random.Range(0, rooms.Count)];
-            Vector3 goalPosition = new Vector3(randomRoom.x + randomRoom.width / 2, 1, randomRoom.y + randomRoom.height / 2);
+            List<BSPNode> rooms = GetAllRooms(root);
+            BSPNode randomRoom = rooms[Random.Range(0, rooms.Count)];
+            Vector3 goalPosition = new Vector3(randomRoom.Room.x + randomRoom.Room.width / 2, 1, randomRoom.Room.y + randomRoom.Room.height / 2);
             Instantiate(goalPrefab, goalPosition, Quaternion.identity);
+            Debug.Log($"Goal item placed at {goalPosition}");
         }
     }
 
@@ -268,12 +360,12 @@ public class DungeonGenerator : MonoBehaviour
         }
     }
 
-    List<RectInt> GetAllRooms(BSPNode node)
+    List<BSPNode> GetAllRooms(BSPNode node)
     {
-        List<RectInt> rooms = new List<RectInt>();
+        List<BSPNode> rooms = new List<BSPNode>();
         if (node.Room.width != 0 && node.Room.height != 0)
         {
-            rooms.Add(node.Room);
+            rooms.Add(node);
         }
         if (node.Left != null)
         {
@@ -284,5 +376,15 @@ public class DungeonGenerator : MonoBehaviour
             rooms.AddRange(GetAllRooms(node.Right));
         }
         return rooms;
+    }
+
+    void AdjustNavMeshSurface()
+    {
+        if (navMeshSurface != null)
+        {
+            // Adjust the position and size of the NavMeshSurface to cover the entire dungeon
+            navMeshSurface.transform.position = new Vector3(width / 2, 0, height / 2);
+            navMeshSurface.size = new Vector3(width, 1, height);
+        }
     }
 }

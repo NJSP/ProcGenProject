@@ -6,7 +6,10 @@ public class FP_Controller : MonoBehaviour
 {
     [Header("Movement Settings")]
     public float walkSpeed = 5f;
-    public float sprintSpeed = 10f;
+    public float baseSprintSpeed = 10f;
+    public float maxSprintSpeed = 15f;
+    public float acceleration = 0.5f;
+    public float deceleration = 0.5f;
     public float crouchSpeed = 2.5f;
     public float gravity = -9.81f;
     public float jumpHeight = 1.5f;
@@ -29,11 +32,13 @@ public class FP_Controller : MonoBehaviour
     private bool isGrounded;
     private bool isCrouching = false;
     private float xRotation = 0f;
+    private float currentSpeed;
 
     void Start()
     {
         characterController = GetComponent<CharacterController>();
         Cursor.lockState = CursorLockMode.Locked; // Lock the cursor to the center of the screen
+        currentSpeed = walkSpeed;
     }
 
     void Update()
@@ -58,7 +63,7 @@ public class FP_Controller : MonoBehaviour
             velocity.y = -2f;
         }
 
-        float speed = isCrouching ? crouchSpeed : (Input.GetKey(KeyCode.LeftShift) ? sprintSpeed : walkSpeed);
+        float speed = isCrouching ? crouchSpeed : (Input.GetKey(KeyCode.LeftShift) ? baseSprintSpeed : walkSpeed);
         float moveX = Input.GetAxis("Horizontal");
         float moveZ = Input.GetAxis("Vertical");
 
@@ -68,6 +73,15 @@ public class FP_Controller : MonoBehaviour
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+        }
+
+        if (move.magnitude > 0)
+        {
+            currentSpeed = Mathf.Lerp(currentSpeed, speed, acceleration * Time.deltaTime);
+        }
+        else
+        {
+            currentSpeed = Mathf.Lerp(currentSpeed, 0, deceleration * Time.deltaTime);
         }
 
         characterController.Move(velocity * Time.deltaTime);
