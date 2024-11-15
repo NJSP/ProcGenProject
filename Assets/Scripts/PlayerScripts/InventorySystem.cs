@@ -1,20 +1,32 @@
 using System.Collections.Generic;
+using TMPro;
+using Assets.Scripts.PlayerScripts;
 using UnityEngine;
 
-namespace Assets.ProcGen.ProcGenScripts
+namespace Assets.Scripts.PlayerScripts
 { 
 public class InventorySystem : MonoBehaviour
 {
     public List<InventoryItem> items = new List<InventoryItem>();
     public float maxCapacity;
     public float currentWeight;
+    public int totalValue;
+    private HudManager hudManager;
 
-    public void AddItem(InventoryItem item)
+
+        // Awake is called when the script instance is being loaded
+        void Awake()
+        {
+            hudManager = new HudManager();
+        }
+        public void AddItem(InventoryItem item)
     {
         items.Add(item);
         currentWeight += item.weight;
         CheckOverflow();
-    }
+        totalValue += item.value;
+        hudManager.UpdateHud();
+        }
 
     private void CheckOverflow()
     {
@@ -36,6 +48,7 @@ public class InventorySystem : MonoBehaviour
                 Debug.Log("Item " + item.itemName + ": " + itemCount);
             }
         }
+
     }
     
 }

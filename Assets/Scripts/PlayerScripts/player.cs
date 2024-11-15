@@ -1,4 +1,4 @@
-﻿using Assets.ProcGen.ProcGenScripts;
+﻿using Assets.Scripts.PlayerScripts;
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]

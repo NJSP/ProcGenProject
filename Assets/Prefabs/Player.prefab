@@ -106,7 +106,7 @@ GameObject:
   - component: {fileID: 4825708988340562771}
   - component: {fileID: 4436951795405218242}
   - component: {fileID: 4163313064613268270}
-  - component: {fileID: 9130356496129543003}
+  - component: {fileID: 8307277144082046449}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -151,7 +151,7 @@ CharacterController:
   serializedVersion: 3
   m_Height: 1
   m_Radius: 0.3
-  m_SlopeLimit: 45
+  m_SlopeLimit: 20
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
@@ -200,6 +200,7 @@ MonoBehaviour:
   items: []
   maxCapacity: 100
   currentWeight: 0
+  totalValue: 0
 --- !u!114 &4436951795405218242
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -227,11 +228,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
---- !u!81 &9130356496129543003
-AudioListener:
+--- !u!114 &8307277144082046449
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7384544040926495519}
-  m_Enabled: 0
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aee2be00b52dda44b84fb93a09a863b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
