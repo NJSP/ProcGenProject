@@ -685,6 +685,75 @@ MonoBehaviour:
   m_MinRegionArea: 0.001
   m_NavMeshData: {fileID: 23800000, guid: 48a2caeefad6f5b45bbeac001caa3126, type: 2}
   m_BuildHeightMesh: 0
+--- !u!1001 &1737552074
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 102939809800105953, guid: 8cb79b85cf7ff1f4fb504b3fc278d432, type: 3}
+      propertyPath: swingAngle
+      value: 45
+      objectReference: {fileID: 0}
+    - target: {fileID: 102939809800105953, guid: 8cb79b85cf7ff1f4fb504b3fc278d432, type: 3}
+      propertyPath: swingSpeed
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 102939809800105953, guid: 8cb79b85cf7ff1f4fb504b3fc278d432, type: 3}
+      propertyPath: dampingFactor
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6669290746239862972, guid: 8cb79b85cf7ff1f4fb504b3fc278d432, type: 3}
+      propertyPath: m_Name
+      value: AxeTrap
+      objectReference: {fileID: 0}
+    - target: {fileID: 7729954592524470861, guid: 8cb79b85cf7ff1f4fb504b3fc278d432, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 14.481504
+      objectReference: {fileID: 0}
+    - target: {fileID: 7729954592524470861, guid: 8cb79b85cf7ff1f4fb504b3fc278d432, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.015
+      objectReference: {fileID: 0}
+    - target: {fileID: 7729954592524470861, guid: 8cb79b85cf7ff1f4fb504b3fc278d432, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 16.687431
+      objectReference: {fileID: 0}
+    - target: {fileID: 7729954592524470861, guid: 8cb79b85cf7ff1f4fb504b3fc278d432, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7729954592524470861, guid: 8cb79b85cf7ff1f4fb504b3fc278d432, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7729954592524470861, guid: 8cb79b85cf7ff1f4fb504b3fc278d432, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7729954592524470861, guid: 8cb79b85cf7ff1f4fb504b3fc278d432, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7729954592524470861, guid: 8cb79b85cf7ff1f4fb504b3fc278d432, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7729954592524470861, guid: 8cb79b85cf7ff1f4fb504b3fc278d432, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7729954592524470861, guid: 8cb79b85cf7ff1f4fb504b3fc278d432, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 8cb79b85cf7ff1f4fb504b3fc278d432, type: 3}
 --- !u!1001 &1859367100
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -800,7 +869,7 @@ MonoBehaviour:
   maxCorridorLength: 3
   tilePrefab: {fileID: 938890720}
   playerPrefab: {fileID: 7384544040926495519, guid: 6c2cdfe21ab74044da4c00d36fe4dec8, type: 3}
-  goalPrefab: {fileID: 2539671375780893672, guid: c88d4408ff672f145b9eb5ff9f99aed6, type: 3}
+  goalPrefab: {fileID: 6669290746239862972, guid: 8cb79b85cf7ff1f4fb504b3fc278d432, type: 3}
   navMeshSurface: {fileID: 1195505104}
   standardRoomWeight: 0.5
   treasureRoomWeight: 0.2
@@ -817,3 +886,4 @@ SceneRoots:
   - {fileID: 1946453568}
   - {fileID: 938890722}
   - {fileID: 1195505103}
+  - {fileID: 1737552074}
